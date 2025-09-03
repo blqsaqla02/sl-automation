@@ -1,10 +1,14 @@
 name: Robot Framework Tests
 
 on:
-  # Runs on every push to main
-  push:
-    branches:
-      - main
+  # Manual trigger
+  workflow_dispatch:
+    inputs:
+      run_type:
+        description: "Choose run type"
+        required: true
+        default: "manual"
+
   # Scheduled run at 9 AM daily
   schedule:
     - cron: "0 9 * * *"
@@ -32,10 +36,16 @@ jobs:
           pip install robotframework-browser
           rfbrowser init  # needed for Browser library
 
-      # Run tests
+      # Run tests in headless mode
       - name: Run Robot Framework tests
         run: |
-          robot -d results TestSuites/
+          if [ "${{ github.event_name }}" == "schedule" ]; then
+            echo "Running: SL automation scheduled run"
+            robot --variable BROWSER:headlesschromium -d results TestSuites/
+          else
+            echo "Running: SL manual run"
+            robot --variable BROWSER:headlesschromium -d results TestSuites/
+          fi
 
       # Upload results as artifacts
       - name: Upload test reports
