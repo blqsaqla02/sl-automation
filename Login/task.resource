@@ -6,7 +6,7 @@ Variables    ../Products/page.py
 *** Keywords ***
 Open Browser To Login Page
     [Arguments]    ${url}
-    New Browser    chromium    headless=false
+    New Browser    chromium    headless=true
     New Context    viewport={'width': 1920, 'height': 1080}
     New Page       ${url}
 
